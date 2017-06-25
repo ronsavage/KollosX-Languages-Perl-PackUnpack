@@ -17,15 +17,15 @@ my(%params) =
 	) : (),
 	clean =>
 	{
-		FILES => 'blib/* Makefile MANIFEST MarpaX-Languages-Perl-PackUnpack-*'
+		FILES => 'blib/* Makefile MANIFEST KollosX-Languages-Perl-PackUnpack-*'
 	},
 	dist =>
 	{
 		COMPRESS => 'gzip',
 		SUFFIX   => 'gz'
 	},
-	DISTNAME  => 'MarpaX-Languages-Perl-PackUnpack',
-	NAME      => 'MarpaX::Languages::Perl::PackUnpack',
+	DISTNAME  => 'KollosX-Languages-Perl-PackUnpack',
+	NAME      => 'KollosX::Languages::Perl::PackUnpack',
 	PL_FILES  => {},
 	PREREQ_PM =>
 	{
@@ -42,7 +42,7 @@ my(%params) =
 		'utf8' => 0,
 		'warnings' => 0,
 	},
-	VERSION_FROM => 'lib/MarpaX/Languages/Perl/PackUnpack.pm',
+	VERSION_FROM => 'lib/KollosX/Languages/Perl/PackUnpack.pm',
 );
 
 if ( ($ExtUtils::MakeMaker::VERSION =~ /^\d\.\d\d$/) && ($ExtUtils::MakeMaker::VERSION > 6.30) )
@@ -60,13 +60,13 @@ if ($ExtUtils::MakeMaker::VERSION ge '6.46')
 		},
 		resources   =>
 		{
-		'bugtracker' => 'https://rt.cpan.org/Public/Dist/Display.html?Name=MarpaX-Languages-Perl-PackUnpack',
+		'bugtracker' => 'https://rt.cpan.org/Public/Dist/Display.html?Name=KollosX-Languages-Perl-PackUnpack',
 		'license' => 'http://opensource.org/licenses/Artistic-2.0',
 			repository =>
 			{
 		'type' => 'git',
-		'url' => 'https://github.com/ronsavage/MarpaX-Languages-Perl-PackUnpack.git',
-		'web' => 'https://github.com/ronsavage/MarpaX-Languages-Perl-PackUnpack',
+		'url' => 'https://github.com/ronsavage/KollosX-Languages-Perl-PackUnpack.git',
+		'web' => 'https://github.com/ronsavage/KollosX-Languages-Perl-PackUnpack',
 			},
 		},
 	};

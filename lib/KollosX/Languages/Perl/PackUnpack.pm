@@ -13,7 +13,7 @@ use Const::Exporter constants =>
 	ambiguity_is_fatal => 4,
 ];
 
-use Marpa::R2;
+use Marpa::R3;
 
 use Moo;
 
@@ -52,14 +52,6 @@ has grammar =>
 	default  => sub {return ''},
 	is       => 'rw',
 	isa      => Any,
-	required => 0,
-);
-
-has known_events =>
-(
-	default  => sub{return {} },
-	is       => 'rw',
-	isa      => HashRef,
 	required => 0,
 );
 
@@ -127,8 +119,6 @@ sub BUILD
 
 :default				::= action => [values]
 
-lexeme default			= latm => 1
-
 :start					::= template
 
 template				::= item+
@@ -141,7 +131,7 @@ template				::= item+
 # Since here is does not matter which way we jump, I've arbitrarily used ranks 1 .. 5.
 # AFAIK any ranks will do, as long as they are different.
 # BTW: These ranks only work because I've used (ranking_method => 'high_rule_only')
-# in the call to the constructor Marpa::R2::Scanless::R -> new().
+# in the call to the constructor Marpa::R3::Scanless::R -> new().
 
 item					::= prefix character
 
@@ -189,49 +179,49 @@ endian_token			::= endian_literal
 
 # Lexemes in alphabetical order.
 
-:lexeme					~ bang_and_endian_set	pause => before		event => bang_and_endian_set
+:lexeme					~ bang_and_endian_set	pause => before		event => '"bang_and_endian_set"'
 bang_and_endian_set		~ [sSiIlL]
 
-:lexeme					~ bang_endian_literal	pause => before		event => bang_endian_literal
+:lexeme					~ bang_endian_literal	pause => before		event => '"bang_endian_literal"'
 bang_endian_literal		~ '!<'
 bang_endian_literal		~ '!>'
 bang_endian_literal		~ '<!'
 bang_endian_literal		~ '>!'
 
-:lexeme					~ bang_literal			pause => before		event => bang_literal
+:lexeme					~ bang_literal			pause => before		event => '"bang_literal"'
 bang_literal			~ '!'
 
-:lexeme					~ bang_only_set			pause => before		event => bang_only_set
+:lexeme					~ bang_only_set			pause => before		event => '"bang_only_set"'
 bang_only_set			~ [xXnNvV@.]
 
-:lexeme					~ basic_set				pause => before		event => basic_set
+:lexeme					~ basic_set				pause => before		event => '"basic_set"'
 basic_set				~ [aAZbBhHcCwWuU]
 
-:lexeme					~ close_bracket			pause => before		event => close_bracket
+:lexeme					~ close_bracket			pause => before		event => '"close_bracket"'
 close_bracket			~ ']'
 
-:lexeme					~ endian_literal		pause => before		event => endian_literal
+:lexeme					~ endian_literal		pause => before		event => '"endian_literal"'
 endian_literal			~ [><]
 
-:lexeme					~ endian_only_set		pause => before		event => endian_only_set
+:lexeme					~ endian_only_set		pause => before		event => '"endian_only_set"'
 endian_only_set			~ [qQjJfFdDpP]
 
-:lexeme					~ number				pause => before		event => number
+:lexeme					~ number				pause => before		event => '"number"'
 number					~ [\d]+
 
-:lexeme					~ open_bracket			pause => before		event => open_bracket
+:lexeme					~ open_bracket			pause => before		event => '"open_bracket"'
 open_bracket			~ '['
 
-:lexeme					~ parentheses_set		pause => before		event => parentheses_set
+:lexeme					~ parentheses_set		pause => before		event => '"parentheses_set"'
 parentheses_set			~ [()]
 
-:lexeme					~ percent_literal		pause => before		event => percent_literal
+:lexeme					~ percent_literal		pause => before		event => '"percent_literal"'
 percent_literal			~ '%'
 
-:lexeme					~ slash_literal			pause => before		event => slash_literal
+:lexeme					~ slash_literal			pause => before		event => '"slash_literal"'
 slash_literal			~ '/'
 
-:lexeme					~ star					pause => before		event => star
+:lexeme					~ star					pause => before		event => '"star"'
 star					~ '*'
 
 :discard				~ whitespace
@@ -239,7 +229,7 @@ whitespace				~ [\s]+
 
 :discard				~ <hash style comment>
 
-# Hash comment handling copied from Marpa::R2's metag.bnf.
+# Hash comment handling copied from Marpa::R3's metag.bnf.
 
 <hash style comment>				~ <terminated hash comment>
 										| <unterminated final hash comment>
@@ -259,20 +249,11 @@ END_OF_GRAMMAR
 	$self -> bnf($bnf);
 	$self -> grammar
 	(
-		Marpa::R2::Scanless::G -> new
+		Marpa::R3::Scanless::G -> new
 		({
 			source => \$self -> bnf
 		})
 	);
-
-	my(%event);
-
-	for my $line (split(/\n/, $self -> bnf) )
-	{
-		$event{$1} = 1 if ($line =~ /event\s+=>\s+(\w+)/);
-	}
-
-	$self -> known_events(\%event);
 
 } # End of BUILD.
 
@@ -352,16 +333,48 @@ sub node2string
 
 sub parse
 {
-	my($self, $string) = @_;
+	my($self, $string)	= @_;
+	my(%token_event)	=
+	(
+		bang_and_endian_set => 1,
+		bang_only_set       => 1,
+		basic_set           => 1,
+		endian_only_set     => 1,
+		parentheses_set		=> 1,
+	);
+
+	my($node_name);
+
+	my($event_handlers)	=
+	{
+		"'default" => sub ()
+		{
+			my($recce, $event_name, $lexeme_id, $block_offset, $lexeme_offset, $lexeme_length) = @_;
+
+			$node_name = $token_event{$event_name} ? 'token' : $event_name;
+
+			if ( ($node_name eq 'token') && ($#{$self -> stack} > 1) )
+			{
+				$self -> _pop_stack;
+			}
+
+			$self -> _add_daughter($node_name, $event_name, $self -> grammar -> symbol_name($lexeme_id) );
+
+			$self -> _push_stack if ($node_name eq 'token');
+
+			return 'ok';
+		}
+	};
 
 	$self -> stack([]);
 	$self -> template($string) if (defined $string);
 	$self -> recce
 	(
-		Marpa::R2::Scanless::R -> new
+		Marpa::R3::Scanless::R -> new
 		({
-			grammar        => $self -> grammar,
-			ranking_method => 'high_rule_only',
+			grammar			=> $self -> grammar,
+			event_handlers	=> $event_handlers,
+#			ranking_method	=> 'high_rule_only',
 		})
 	);
 
@@ -419,75 +432,16 @@ sub _pop_stack
 
 sub _process
 {
-	my($self)        = @_;
-	my($string)      = $self -> template || ''; # Allow for undef.
-	my($pos)         = 0;
-	my($length)      = length($string);
-	my($format)      = "%-20s    %5s    %5s    %5s    %-20s    %-20s\n";
-	my($last_event)  = '';
-	my(%token_event) =
-	(
-		bang_and_endian_set => 1,
-		bang_only_set       => 1,
-		basic_set           => 1,
-		endian_only_set     => 1,
-		parentheses_set		=> 1,
-	);
-
-	if ($self -> options & debug)
-	{
-		print "Input: $string. Length: $length. \n";
-		print sprintf($format, 'Event', 'Start', 'Span', 'Pos', 'Lexeme', 'Comment');
-	}
-
-	my($event_name);
-	my($lexeme);
-	my($message);
-	my($node_name);
-	my($original_lexeme);
-	my($span, $start);
-	my($tos);
-
-	# We use read()/lexeme_read()/resume() because we pause at each lexeme.
-	# Also, in read(), we use $pos and $length to avoid reading Ruby Slippers tokens (if any).
-	# For the latter, see scripts/match.parentheses.02.pl in KollosX::Demo::SampleScripts.
-
-	for
-	(
-		$pos = $self -> recce -> read(\$string, $pos, $length);
-		($pos < $length);
-		$pos = $self -> recce -> resume($pos)
-	)
-	{
-		($start, $span)            = $self -> recce -> pause_span;
-		($event_name, $span, $pos) = $self -> _validate_event($string, $start, $span, $pos);
-		$lexeme                    = $self -> recce -> literal($start, $span);
-		$original_lexeme           = $lexeme;
-		$pos                       = $self -> recce -> lexeme_read($event_name);
-
-		die "lexeme_read($event_name) rejected lexeme |$lexeme|\n" if (! defined $pos);
-
-		print sprintf($format, $event_name, $start, $span, $pos, $lexeme, '-') if ($self -> options & debug);
-
-		$node_name = $token_event{$event_name} ? 'token' : $event_name;
-
-		if ( ($node_name eq 'token') && ($#{$self -> stack} > 1) )
-		{
-			$self -> _pop_stack;
-		}
-
-		$self -> _add_daughter($node_name, $event_name, $lexeme);
-
-		$self -> _push_stack if ($node_name eq 'token');
-
-		$last_event = $event_name;
-	}
+	my($self)	= @_;
+	my($string)	= $self -> template || ''; # Allow for undef.
+	my($length)	= length($string);
+	my($pos)	= $self -> recce -> read(\$string);
 
 	if (my $status = $self -> recce -> ambiguous)
 	{
-		my($terminals) = $self -> recce -> terminals_expected;
-		$terminals     = ['(None)'] if ($#$terminals < 0);
-		$message       = 'Ambiguous parse. Status: $status. Terminals expected: ' . join(', ', @$terminals);
+		my($terminals)	= $self -> recce -> terminals_expected;
+		$terminals		= ['(None)'] if ($#$terminals < 0);
+		my($message)	= 'Ambiguous parse. Status: $status. Terminals expected: ' . join(', ', @$terminals);
 
 		$self -> error_message($message);
 		$self -> error_number(1);
@@ -508,7 +462,14 @@ sub _process
 
 	# Return a defined value for success and undef for failure.
 
-	return $self -> recce -> value;
+	my($value) = $self -> recce -> value;
+
+	if (! defined $value)
+	{
+		print $self -> show_last_expression, "\n";
+	}
+
+	return $value;
 
 } # End of _process.
 
@@ -525,6 +486,21 @@ sub _push_stack
 	$self -> stack($stack);
 
 } # End of _push_stack.
+
+# ------------------------------------------------
+
+sub show_last_expression
+{
+	my($self)					= @_;
+	my($g1_start, $g1_length)	= $self -> recce -> last_completed('Expression');
+
+	return 'No expression was successfully parsed' if (! defined $g1_start);
+
+	my($last_expression) = $self -> recce -> g1_literal($g1_start, $g1_length);
+
+	return "Last expression successfully parsed was: $last_expression";
+
+} # End of show_last_expression.
 
 # ------------------------------------------------
 
@@ -605,59 +581,6 @@ sub tree2string
 	return [@out];
 
 } # End of tree2string.
-
-# ------------------------------------------------
-
-sub _validate_event
-{
-	my($self, $string, $start, $span, $pos) = @_;
-	my(@event)         = @{$self -> recce -> events};
-	my($event_count)   = scalar @event;
-	my(@event_name)    = sort map{$$_[0]} @event;
-	my($event_name)    = $event_name[0]; # Default.
-	my($lexeme)        = substr($string, $start, $span);
-	my($line, $column) = $self -> recce -> line_column($start);
-	my($literal)       = $self -> next_few_chars($string, $start + $span);
-	my($message)       = "Location: ($line, $column). Lexeme: |$lexeme|. Next few chars: |$literal|";
-	$message           = "$message. Events: $event_count. Names: ";
-
-	print $message, join(', ', @event_name), "\n" if ($self -> options & debug);
-
-	my(%event_name);
-
-	@event_name{@event_name} = (1) x @event_name;
-
-	for (@event_name)
-	{
-		if (! ${$self -> known_events}{$_})
-		{
-			$message = "Unexpected event name '$_'";
-
-			$self -> error_message($message);
-			$self -> error_number(2);
-
-			# This 'die' is inside try {}catch{}, which adds the prefix 'Error: '.
-
-			die "$message\n";
-		}
-	}
-
-	if ($event_count > 1)
-	{
-		$message = join(', ', @event_name);
-		$message = "The code does not handle these events simultaneously: $message";
-
-		$self -> error_message($message);
-		$self -> error_number(3);
-
-		# This 'die' is inside try {}catch{}, which adds the prefix 'Error: '.
-
-		die "$message\n";
-	}
-
-	return ($event_name, $span, $pos);
-
-} # End of _validate_event.
 
 # ------------------------------------------------
 
@@ -878,7 +801,7 @@ If L</error_number()> returns 1, it's an error, and if it returns -1 it's a warn
 
 You can set the option C<ambiguity_is_fatal> to make it fatal.
 
-=item o 2 => "Unexpected event name 'xyz'"
+=item o 2 => "Unexpected event name 'xyz"'
 
 Marpa has trigged an event and it's name is not in the hash of event names derived from the BNF.
 
