@@ -251,7 +251,8 @@ END_OF_GRAMMAR
 	(
 		Marpa::R3::Scanless::G -> new
 		({
-			source => \$self -> bnf
+			ranking_method	=> 'high_rule_only',
+			source			=> \$self -> bnf,
 		})
 	);
 
@@ -374,7 +375,6 @@ sub parse
 		({
 			grammar			=> $self -> grammar,
 			event_handlers	=> $event_handlers,
-#			ranking_method	=> 'high_rule_only',
 		})
 	);
 
