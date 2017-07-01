@@ -7,7 +7,7 @@ use KollosX::Languages::Perl::PackUnpack ':constants';
 
 # -----------
 
-my($parser) = KollosX::Languages::Perl::PackUnpack -> new(options => nothing_is_fatal | debug);
+my($parser) = KollosX::Languages::Perl::PackUnpack -> new(options => nothing_is_fatal);
 my(@text)   =
 (
 	q|(sl)|,
