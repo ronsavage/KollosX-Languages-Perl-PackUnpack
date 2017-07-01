@@ -179,49 +179,49 @@ endian_token			::= endian_literal
 
 # Lexemes in alphabetical order.
 
-:lexeme					~ bang_and_endian_set	pause => before		event => '"bang_and_endian_set"'
+:lexeme					~ bang_and_endian_set	pause => after		event => 'bang_and_endian_set'
 bang_and_endian_set		~ [sSiIlL]
 
-:lexeme					~ bang_endian_literal	pause => before		event => '"bang_endian_literal"'
+:lexeme					~ bang_endian_literal	pause => after		event => 'bang_endian_literal'
 bang_endian_literal		~ '!<'
 bang_endian_literal		~ '!>'
 bang_endian_literal		~ '<!'
 bang_endian_literal		~ '>!'
 
-:lexeme					~ bang_literal			pause => before		event => '"bang_literal"'
+:lexeme					~ bang_literal			pause => after		event => 'bang_literal'
 bang_literal			~ '!'
 
-:lexeme					~ bang_only_set			pause => before		event => '"bang_only_set"'
+:lexeme					~ bang_only_set			pause => after		event => 'bang_only_set'
 bang_only_set			~ [xXnNvV@.]
 
-:lexeme					~ basic_set				pause => before		event => '"basic_set"'
+:lexeme					~ basic_set				pause => after		event => 'basic_set'
 basic_set				~ [aAZbBhHcCwWuU]
 
-:lexeme					~ close_bracket			pause => before		event => '"close_bracket"'
+:lexeme					~ close_bracket			pause => after		event => 'close_bracket'
 close_bracket			~ ']'
 
-:lexeme					~ endian_literal		pause => before		event => '"endian_literal"'
+:lexeme					~ endian_literal		pause => after		event => 'endian_literal'
 endian_literal			~ [><]
 
-:lexeme					~ endian_only_set		pause => before		event => '"endian_only_set"'
+:lexeme					~ endian_only_set		pause => after		event => 'endian_only_set'
 endian_only_set			~ [qQjJfFdDpP]
 
-:lexeme					~ number				pause => before		event => '"number"'
+:lexeme					~ number				pause => after		event => 'number'
 number					~ [\d]+
 
-:lexeme					~ open_bracket			pause => before		event => '"open_bracket"'
+:lexeme					~ open_bracket			pause => after		event => 'open_bracket'
 open_bracket			~ '['
 
-:lexeme					~ parentheses_set		pause => before		event => '"parentheses_set"'
+:lexeme					~ parentheses_set		pause => after		event => 'parentheses_set'
 parentheses_set			~ [()]
 
-:lexeme					~ percent_literal		pause => before		event => '"percent_literal"'
+:lexeme					~ percent_literal		pause => after		event => 'percent_literal'
 percent_literal			~ '%'
 
-:lexeme					~ slash_literal			pause => before		event => '"slash_literal"'
+:lexeme					~ slash_literal			pause => after		event => 'slash_literal'
 slash_literal			~ '/'
 
-:lexeme					~ star					pause => before		event => '"star"'
+:lexeme					~ star					pause => after		event => 'star'
 star					~ '*'
 
 :discard				~ whitespace
@@ -351,15 +351,15 @@ sub parse
 		"'default" => sub ()
 		{
 			my($recce, $event_name, $lexeme_id, $block_offset, $lexeme_offset, $lexeme_length) = @_;
-
-			$node_name = $token_event{$event_name} ? 'token' : $event_name;
+			my($lexeme)	= substr($string, $lexeme_offset, $lexeme_length);
+			$node_name	= $token_event{$event_name} ? 'token' : $event_name;
 
 			if ( ($node_name eq 'token') && ($#{$self -> stack} > 1) )
 			{
 				$self -> _pop_stack;
 			}
 
-			$self -> _add_daughter($node_name, $event_name, $self -> grammar -> symbol_name($lexeme_id) );
+			$self -> _add_daughter($node_name, $event_name, $lexeme);
 
 			$self -> _push_stack if ($node_name eq 'token');
 
@@ -462,14 +462,7 @@ sub _process
 
 	# Return a defined value for success and undef for failure.
 
-	my($value) = $self -> recce -> value;
-
-	if (! defined $value)
-	{
-		print $self -> show_last_expression, "\n";
-	}
-
-	return $value;
+	return $self -> recce -> value;
 
 } # End of _process.
 
@@ -801,7 +794,7 @@ If L</error_number()> returns 1, it's an error, and if it returns -1 it's a warn
 
 You can set the option C<ambiguity_is_fatal> to make it fatal.
 
-=item o 2 => "Unexpected event name 'xyz"'
+=item o 2 => "Unexpected event name 'xyz'
 
 Marpa has trigged an event and it's name is not in the hash of event names derived from the BNF.
 
