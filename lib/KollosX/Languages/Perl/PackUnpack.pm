@@ -179,49 +179,49 @@ endian_token			::= endian_literal
 
 # Lexemes in alphabetical order.
 
-:lexeme					~ bang_and_endian_set	pause => after		event => 'bang_and_endian_set'
+:lexeme					~ bang_and_endian_set	pause => after		event => bang_and_endian_set
 bang_and_endian_set		~ [sSiIlL]
 
-:lexeme					~ bang_endian_literal	pause => after		event => 'bang_endian_literal'
+:lexeme					~ bang_endian_literal	pause => after		event => bang_endian_literal
 bang_endian_literal		~ '!<'
 bang_endian_literal		~ '!>'
 bang_endian_literal		~ '<!'
 bang_endian_literal		~ '>!'
 
-:lexeme					~ bang_literal			pause => after		event => 'bang_literal'
+:lexeme					~ bang_literal			pause => after		event => bang_literal
 bang_literal			~ '!'
 
-:lexeme					~ bang_only_set			pause => after		event => 'bang_only_set'
+:lexeme					~ bang_only_set			pause => after		event => bang_only_set
 bang_only_set			~ [xXnNvV@.]
 
-:lexeme					~ basic_set				pause => after		event => 'basic_set'
+:lexeme					~ basic_set				pause => after		event => basic_set
 basic_set				~ [aAZbBhHcCwWuU]
 
-:lexeme					~ close_bracket			pause => after		event => 'close_bracket'
+:lexeme					~ close_bracket			pause => after		event => close_bracket
 close_bracket			~ ']'
 
-:lexeme					~ endian_literal		pause => after		event => 'endian_literal'
+:lexeme					~ endian_literal		pause => after		event => endian_literal
 endian_literal			~ [><]
 
-:lexeme					~ endian_only_set		pause => after		event => 'endian_only_set'
+:lexeme					~ endian_only_set		pause => after		event => endian_only_set
 endian_only_set			~ [qQjJfFdDpP]
 
-:lexeme					~ number				pause => after		event => 'number'
+:lexeme					~ number				pause => after		event => number
 number					~ [\d]+
 
-:lexeme					~ open_bracket			pause => after		event => 'open_bracket'
+:lexeme					~ open_bracket			pause => after		event => open_bracket
 open_bracket			~ '['
 
-:lexeme					~ parentheses_set		pause => after		event => 'parentheses_set'
+:lexeme					~ parentheses_set		pause => after		event => parentheses_set
 parentheses_set			~ [()]
 
-:lexeme					~ percent_literal		pause => after		event => 'percent_literal'
+:lexeme					~ percent_literal		pause => after		event => percent_literal
 percent_literal			~ '%'
 
-:lexeme					~ slash_literal			pause => after		event => 'slash_literal'
+:lexeme					~ slash_literal			pause => after		event => slash_literal
 slash_literal			~ '/'
 
-:lexeme					~ star					pause => after		event => 'star'
+:lexeme					~ star					pause => after		event => star
 star					~ '*'
 
 :discard				~ whitespace
