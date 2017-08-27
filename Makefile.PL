@@ -29,19 +29,22 @@ my(%params) =
 	PL_FILES  => {},
 	PREREQ_PM =>
 	{
-		'Const::Exporter' => 'v0.2.3',
-		'Marpa::R2' => 3.000000,
-		'Moo' => 1.006000,
-		'open' => 0,
-		'strict' => 0,
-		'Test::More' => 1.001014,
-		'Test::Pod' => 1.48,
-		'Tree' => 1.05,
-		'Try::Tiny' => 0.09,
-		'Types::Standard' => 1.000004,
-		'utf8' => 0,
-		'warnings' => 0,
+		'Const::Exporter'	=> 'v0.2.3',
+		'Marpa::R3'			=> 3.000000,
+		'Moo'				=> 1.006000,
+		'open'				=> 0,
+		'strict'			=> 0,
+		'Tree'				=> 1.05,
+		'Try::Tiny'			=> 0.09,
+		'Types::Standard'	=> 1.000004,
+		'utf8'				=> 0,
+		'warnings'			=> 0,
 	},
+	TEST_REQUIRES =>
+	{
+		'Test::More'	=> 1.001012,
+		'Test::Pod'		=> 1.48,
+	}
 	VERSION_FROM => 'lib/KollosX/Languages/Perl/PackUnpack.pm',
 );
 
