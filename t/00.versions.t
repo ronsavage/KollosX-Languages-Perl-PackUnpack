@@ -9,6 +9,7 @@ use KollosX::Languages::Perl::PackUnpack; # For the version #.
 
 use Test::More;
 
+use Config;
 use Const::Exporter;
 use Marpa::R3;
 use Moo;
@@ -25,6 +26,7 @@ pass('All external modules loaded');
 
 my(@modules) = qw
 /
+	Config
 	Const::Exporter
 	Marpa::R3
 	Moo
