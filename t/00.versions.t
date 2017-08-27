@@ -5,16 +5,16 @@ use warnings;
 
 # I tried 'require'-ing modules but that did not work.
 
-use SVG::Grid; # For the version #.
+use KollosX::Languages::Perl::PackUnpack; # For the version #.
 
 use Test::More;
 
-use File::Slurper;
-use Getopt::Long;
+use Const::Exporter;
+use Marpa::R3;
 use Moo;
-use Pod::Usage;
 use strict;
-use SVG;
+use Tree;
+use Try::Tiny;
 use Types::Standard;
 use utf8;
 use warnings;
@@ -25,18 +25,18 @@ pass('All external modules loaded');
 
 my(@modules) = qw
 /
-	File::Slurper
-	Getopt::Long
+	Const::Exporter
+	Marpa::R3
 	Moo
-	Pod::Usage
 	strict
-	SVG
+	Tree
+	Try::Tiny
 	Types::Standard
 	utf8
 	warnings
 /;
 
-diag "Testing SVG::Grid V $SVG::Grid::VERSION";
+diag "Testing KollosX::Languages::Perl::PackUnpack V $KollosX::Languages::Perl::PackUnpack::VERSION";
 
 for my $module (@modules)
 {
