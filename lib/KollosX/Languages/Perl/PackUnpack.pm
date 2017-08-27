@@ -1199,13 +1199,13 @@ Marpa's homepage: L<http://savage.net.au/Marpa.html>.
 
 My homepage: L<http://savage.net.au/>.
 
-=head1 Copyright
+=head1 Copyright and Licence
 
 Australian copyright (c) 2015, Ron Savage.
 
 	All Programs of mine are 'OSI Certified Open Source Software';
 	you can redistribute them and/or modify them under the terms of
-	The Artistic License 2.0, a copy of which is available at:
-	http://opensource.org/licenses/alphabetical.
+	The Perl License, a copy of which is available at:
+	http://dev.perl.org/licenses/
 
 =cut
