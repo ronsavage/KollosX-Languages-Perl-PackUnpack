@@ -30,7 +30,7 @@ my(%params) =
 	PREREQ_PM =>
 	{
 		'Const::Exporter' => 'v0.2.3',
-		'Marpa::R2' => 2.096000,
+		'Marpa::R2' => 3.000000,
 		'Moo' => 1.006000,
 		'open' => 0,
 		'strict' => 0,
@@ -55,20 +55,20 @@ if ($ExtUtils::MakeMaker::VERSION ge '6.46')
 	$params{META_MERGE} =
 	{
 		'meta-spec' =>
-		{
-		'version' => 2,
-		},
-		resources   =>
-		{
-		'bugtracker' => 'https://rt.cpan.org/Public/Dist/Display.html?Name=KollosX-Languages-Perl-PackUnpack',
-		'license' => 'http://opensource.org/licenses/Artistic-2.0',
-			repository =>
 			{
-		'type' => 'git',
-		'url' => 'https://github.com/ronsavage/KollosX-Languages-Perl-PackUnpack.git',
-		'web' => 'https://github.com/ronsavage/KollosX-Languages-Perl-PackUnpack',
+				version => 2,
 			},
-		},
+		resources   =>
+			{
+				bugtracker	=> 'https://rt.cpan.org/Public/Dist/Display.html?Name=KollosX-Languages-Perl-PackUnpack',
+				license		=> 'http://opensource.org/licenses/Artistic-2.0',
+				repository	=>
+				{
+					type	=> 'git',
+					url		=> 'https://github.com/ronsavage/KollosX-Languages-Perl-PackUnpack.git',
+					web		=> 'https://github.com/ronsavage/KollosX-Languages-Perl-PackUnpack',
+				},
+			},
 	};
 }
 
