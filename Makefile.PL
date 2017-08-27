@@ -44,7 +44,7 @@ my(%params) =
 	{
 		'Test::More'	=> 1.001012,
 		'Test::Pod'		=> 1.48,
-	}
+	},
 	VERSION_FROM => 'lib/KollosX/Languages/Perl/PackUnpack.pm',
 );
 
